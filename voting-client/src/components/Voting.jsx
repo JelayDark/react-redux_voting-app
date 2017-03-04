@@ -10,6 +10,6 @@ export default React.createClass({
                 <button key={entry}>
                   <h1>{entry}</h1>
                 </button>
-                )} </div>;
+              )} </div>;
   }
 });
