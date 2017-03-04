@@ -5,6 +5,7 @@ import {
   scryRenderedDOMComponentsWithTag,
   Simulate
 } from 'react-addons-test-utils';
+import {List} from 'immutable';
 import Voting from '../../src/components/Voting';
 import {expect} from 'chai';
 
@@ -32,6 +33,74 @@ describe('Voting', () => {
     Simulate.click(buttons[0]);
 
     expect(votedWith).to.equal('Trainspotting');
-  })
+  });
 
+  it('disables button as soon as user votes', () => {
+    const component = renderIntoDocument(
+      <Voting pair={["Trainspotting", "28 Days Later"]}
+              hasVoted="Trainspotting" />
+    );
+    const buttons = scryRenderedDOMComponentsWithTag(component, 'button');
+
+    expect(buttons.length).to.equal(2);
+    expect(buttons[0].hasAttribute('disabled')).to.equal(true);
+    expect(buttons[1].hasAttribute('disabled')).to.equal(true)
+  });
+
+  it('adds label to note, which has voted for', () => {
+    const component = renderIntoDocument(
+      <Voting pair={["Trainspotting", "28 Days Later"]}
+              hasVoted="Trainspotting" />
+    );
+    const buttons = scryRenderedDOMComponentsWithTag(component, 'button');
+
+    expect(buttons[0].textContent).to.contain('Voted');
+  });
+
+  it('displays only winner', () => {
+    const component = renderIntoDocument(
+      <Voting winner="Trainspotting" />
+    );
+
+    const buttons = scryRenderedDOMComponentsWithTag(component, 'button');
+
+    expect(buttons.length).to.equal(0);
+
+    const winner = ReactDOM.findDOMNode(component.refs.winner);
+    expect(winner).to.be.ok;
+    expect(winner.textContent).to.contain('Trainspotting');
+  });
+
+  it('displays as pure component', () => {
+    const pair = ["Trainspotting", "28 Days Later"];
+    const container = document.createElement('div');
+    let component = ReactDOM.render(
+      <Voting pair={pair} />,
+      container
+    );
+
+    let firstButton = scryRenderedDOMComponentsWithTag(component, 'button')[0];
+    expect(firstButton.textContent).to.equal('Trainspotting');
+  });
+
+  it('updates DOM whenever settings change', () => {
+    const pair = List.of('Trainspotting', '28 Days Later');
+    const container = document.createElement('div');
+    let component = ReactDOM.render(
+      <Voting pair={pair} />,
+      container
+    );
+
+    let firstButton = scryRenderedDOMComponentsWithTag(component, 'button')[0];
+    expect(firstButton.textContent).to.equal('Trainspotting');
+
+    const newPair = pair.set(0, 'Sunshine');
+    component = ReactDOM.render(
+      <Voting pair={newPair} />,
+      container
+    );
+
+    firstButton = scryRenderedDOMComponentsWithTag(component, 'button')[0];
+    expect(firstButton.textContent).to.equal('Sunshine');
+  })
 });
