@@ -1,4 +1,4 @@
-import {Map, fromJS} from 'immutable';
+import {List, Map, fromJS} from 'immutable';
 import {expect} from 'chai';
 
 import reducer from '../src/reducer';
@@ -72,6 +72,7 @@ describe('reducer', () => {
     expect(finalState).to.equal(fromJS({
       winner: 'Trainspotting'
     }));
-  })
+  });
+
 
 });
